@@ -23,7 +23,9 @@ vickers <- vickers %>%
     names_prefix = "measure_",
     values_to = "hardness"
   )
+```
 
+```{r}
 ggplot(vickers, aes(x = material, y = hardness)) +
   geom_boxplot() +
   geom_point(aes(color = "Experimental")) +
@@ -59,6 +61,5 @@ ggplot(vickers, aes(x = reorder(name, id), y = hardness)) +
   scale_color_manual(name = "",
                      breaks = c("Standard"),
                      values = c("Standard"="red"))
-
 ```
 
