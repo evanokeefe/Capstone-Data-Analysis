@@ -1,0 +1,64 @@
+---
+title: "capstone_data_analysis"
+author: "Evan O'Keefe"
+date: "3/7/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+vickers <- read_csv("vickers-data-analysis.csv")
+standards = data.frame(material = c("Bronze", "Copper"), hardness = c(107, 50))
+
+vickers <- vickers %>%
+  mutate(name = paste("Sample", id)) %>% 
+  pivot_longer(
+    cols = starts_with("measure"),
+    names_to = "test",
+    names_prefix = "measure_",
+    values_to = "hardness"
+  )
+
+ggplot(vickers, aes(x = material, y = hardness)) +
+  geom_boxplot() +
+  geom_point(aes(color = "Experimental")) +
+  geom_point(data = standards, aes(color = "Standard"), size = 2) +
+  theme_minimal() +
+  labs(
+    title = "Vicker's Microhardness of Copper & Bronze Samples",
+    x = "",
+    y = "Hardness (HV)"
+  ) +
+  scale_color_manual(name = "",
+                     breaks = c("Experimental", "Standard"),
+                     values = c("Experimental"="black", "Standard"="red"))
+```
+
+```{r}
+ggplot(vickers, aes(x = reorder(name, id), y = hardness)) +
+  geom_point() +
+  theme_bw() +
+  facet_wrap(
+    ~material,
+    nrow = 2,
+    scales = "free") +
+  geom_hline(data = standards,
+             aes(yintercept = hardness,
+                 color = "Standard"),
+             linetype = "dashed") +
+  labs(
+    title = "Distribution of Hardness Values Over Each Sample",
+    x = "",
+    y = "Hardness (HV)"
+  ) +
+  scale_color_manual(name = "",
+                     breaks = c("Standard"),
+                     values = c("Standard"="red"))
+
+```
+
