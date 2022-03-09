@@ -63,3 +63,28 @@ ggplot(vickers, aes(x = reorder(name, id), y = hardness)) +
                      values = c("Standard"="red"))
 ```
 
+```{r}
+bronze_hw <- read_csv("bronze-height-width.csv")
+
+bronze_df <- vickers %>%
+  filter(material == "Bronze") %>% 
+  group_by(id) %>% 
+  summarise(hardness = mean(hardness), name = unique(name)) %>% 
+  merge(bronze_hw) %>% 
+  mutate(shrink = (Face - Center) / Face)
+```
+
+```{r}
+library(ggrepel)
+
+ggplot(bronze_df, aes(x = shrink*100, y = hardness)) +
+  geom_point() +
+  geom_text_repel(aes(label = name), nudge_x = 1) +
+  theme_light() +
+  labs(
+    title = "Center Shrinkage vs Hardness of Bronze Sample",
+    x = "Center Shrinkage (%)",
+    y = "Hardness (HV)"
+  )
+```
+
