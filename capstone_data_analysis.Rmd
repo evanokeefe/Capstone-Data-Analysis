@@ -43,16 +43,17 @@ ggplot(vickers, aes(x = material, y = hardness)) +
 
 ```{r}
 ggplot(vickers, aes(x = reorder(name, id), y = hardness)) +
-  geom_point() +
+  geom_hline(data = standards,
+             aes(yintercept = hardness,
+                 color = "Standard"),
+             linetype = "dashed",
+             size = 2) +
+  geom_point(size = 2.5) +
   theme_bw() +
   facet_wrap(
     ~material,
     nrow = 2,
     scales = "free") +
-  geom_hline(data = standards,
-             aes(yintercept = hardness,
-                 color = "Standard"),
-             linetype = "dashed") +
   labs(
     title = "Distribution of Hardness Values Over Each Sample",
     x = "",
@@ -60,7 +61,14 @@ ggplot(vickers, aes(x = reorder(name, id), y = hardness)) +
   ) +
   scale_color_manual(name = "",
                      breaks = c("Standard"),
-                     values = c("Standard"="red"))
+                     values = c("Standard"="red")) +
+  theme(
+    text = element_text(size = 16),
+    plot.title = element_text(size = 24),
+    axis.title = element_text(size = 18)
+  )
+
+ggsave("point-plot-hardness.png", width = 12, height = 6, units = "in")
 ```
 
 ```{r}
@@ -79,12 +87,26 @@ library(ggrepel)
 
 ggplot(bronze_df, aes(x = shrink*100, y = hardness)) +
   geom_point() +
-  geom_text_repel(aes(label = name), nudge_x = 1) +
+  geom_text_repel(aes(label = name), nudge_x = -0.5) +
   theme_light() +
   labs(
-    title = "Center Shrinkage vs Hardness of Bronze Sample",
+    title = "Center Shrinkage vs Hardness",
     x = "Center Shrinkage (%)",
     y = "Hardness (HV)"
+  ) +
+  theme(
+    text = element_text(size = 16),
+    plot.title = element_text(size = 24),
+    axis.title = element_text(size = 18)
   )
+
+ggsave("scatterplot-shrink-hard.png", width = 6, height = 6, units = "in")
+```
+
+```{r}
+bronze_df2 <- vickers %>%
+  filter(material == "Bronze") %>% 
+  merge(bronze_hw) %>% 
+  mutate(shrink = (Face - Center) / Face)
 ```
 
